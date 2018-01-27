@@ -53,9 +53,7 @@ public class BuildingManager : MonoBehaviour {
         //{
         //    return;
         //}
-        string currPlayerid = playerManager.currPlayer;
-        char playerChar = currPlayerid[0];
-        foreach (GameObject currBuildings in buildingStorage.GetPlayerBuildingList(playerChar))
+        foreach (GameObject currBuildings in buildingStorage.GetPlayerBuildingList(playerManager.currPlayer))
         {
             currBuildings.GetComponent<Building>().TickProductionTimer();
             currBuildings.GetComponent<Building>().TickRecruitmentTimer();

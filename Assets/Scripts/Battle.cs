@@ -13,6 +13,7 @@ public class Battle : MonoBehaviour {
     public Summon summon;
     public Build build;
     public EntityStats entityStats;
+    public PlayerManager playerManager;
 
     //entity stats
     private int attackerdmg = 0;
@@ -79,8 +80,8 @@ public class Battle : MonoBehaviour {
 
         //------Encounter Enemy------
         //check if on same team
-        string selTeam = entityStats.GetPlayerID(selectedEntity).Substring(1, 1);
-        string currTeam = entityStats.GetPlayerID(currEntity).Substring(1, 1);
+        int selTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(selectedEntity)];
+        int currTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(currEntity)];
         if (selTeam == currTeam)
         {
             return false;

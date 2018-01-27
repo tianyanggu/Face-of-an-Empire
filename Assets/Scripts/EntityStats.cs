@@ -48,13 +48,12 @@ public class EntityStats : MonoBehaviour {
     }
 
     #region playerID
-    public string GetPlayerID(GameObject entity)
+    public int GetPlayerID(GameObject entity)
     {
-        string player = entity.GetComponent<Entity>().playerID;
-        return player;
+        return entity.GetComponent<Entity>().playerID;
     }
 
-    public void SetPlayerID(GameObject entity, string playerID)
+    public void SetPlayerID(GameObject entity, int playerID)
     {
         entity.GetComponent<Entity>().playerID = playerID;
     }

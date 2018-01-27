@@ -117,19 +117,19 @@ public class HexGrid : MonoBehaviour {
         cell.groundEffects.Remove(effect);
     }
 
-    public void SetHasVision(int index, List<string> players)
+    public void SetHasVision(int index, List<int> players)
     {
         HexCell cell = cells[index];
         cell.hasVision = players;
     }
 
-    public void AddHasVision(int index, string player)
+    public void AddHasVision(int index, int player)
     {
         HexCell cell = cells[index];
         cell.hasVision.Add(player);
     }
 
-    public void RemoveHasVision(int index, string player)
+    public void RemoveHasVision(int index, int player)
     {
         HexCell cell = cells[index];
         cell.hasVision.Remove(player);
@@ -215,7 +215,7 @@ public class HexGrid : MonoBehaviour {
         return cells[index].groundEffects;
     }
 
-    public List<string> GetHasVision(int index)
+    public List<int> GetHasVision(int index)
     {
         return cells[index].hasVision;
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 
 public class Building : MonoBehaviour {
-    public string playerID;
+    public int playerID;
     public string type;
     public Guid uniqueID;
     public int cellIndex;
@@ -61,8 +61,7 @@ public class Building : MonoBehaviour {
             if (hexGrid.GetComponent<HexGrid>().GetEntityObject(currIndex) == null)
             {
                 GameObject summon = GameObject.Find("Summon");
-                string buildingOwner = name.Substring(0, 1);
-                summon.GetComponent<Summon>().SummonEntity(currIndex, currRecruitment, buildingOwner);
+                summon.GetComponent<Summon>().SummonEntity(currIndex, currRecruitment, playerID);
                 currRecruitment = "Empty";
             }
             else

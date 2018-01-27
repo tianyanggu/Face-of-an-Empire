@@ -91,7 +91,7 @@ public class AIBehaviour : MonoBehaviour {
         GameObject currClosestObj = null;
         int currClosest = 999999;
         //TODO change activePlayerAEntities to enemies of AI
-        foreach (GameObject aiEntity in entityStorage.activePlayerAEntities)
+        foreach (GameObject aiEntity in entityStorage.activePlayer1Entities)
         {
             int currEntityIndex = hexGrid.GetCellIndexFromGameObject(aiEntity);
             int currDist = movement.GetDistance(aiIndex, currEntityIndex);

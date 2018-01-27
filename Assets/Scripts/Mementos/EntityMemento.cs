@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 [System.Serializable]
 public class EntityMemento {
-    public string playerID;
+    public int playerID;
     public string type;
     public Guid uniqueID;
     public int cellIndex;

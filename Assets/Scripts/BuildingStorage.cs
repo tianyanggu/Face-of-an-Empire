@@ -7,9 +7,9 @@ public class BuildingStorage : MonoBehaviour {
     public PlayerManager playerManager;
     public BuildingStats buildingStats;
 
-    public List<GameObject> activePlayerABuildings = new List<GameObject>();
-    public List<GameObject> activePlayerBBuildings = new List<GameObject>();
-    public List<GameObject> activePlayerCBuildings = new List<GameObject>();
+    public List<GameObject> activePlayer1Buildings = new List<GameObject>();
+    public List<GameObject> activePlayer2Buildings = new List<GameObject>();
+    public List<GameObject> activePlayer3Buildings = new List<GameObject>();
 
     void Start () {
 
@@ -28,17 +28,17 @@ public class BuildingStorage : MonoBehaviour {
         return new List<string>();
     }
 
-    public List<GameObject> GetPlayerBuildingList(char playerID)
+    public List<GameObject> GetPlayerBuildingList(int playerID)
     {
         //------Determine Faction Entity List------
         switch (playerID)
         {
-            case 'A':
-                return activePlayerABuildings;
-            case 'B':
-                return activePlayerBBuildings;
-            case 'C':
-                return activePlayerCBuildings;
+            case 1:
+                return activePlayer1Buildings;
+            case 2:
+                return activePlayer2Buildings;
+            case 3:
+                return activePlayer3Buildings;
         }
         return new List<GameObject>();
     }

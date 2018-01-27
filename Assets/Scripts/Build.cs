@@ -15,7 +15,7 @@ public class Build : MonoBehaviour {
     public EntityStats entityStats;
 
     //given an index and the type of summon, summons that entity with the next available name
-    public void BuildBuilding (int cellindex, string buildingname, string playerid) {
+    public void BuildBuilding (int cellindex, string buildingname, int playerid) {
 		Vector3 buildindex = hexGrid.GetCellPos(cellindex);
 		buildindex.y = 0.2f;
 
@@ -23,8 +23,7 @@ public class Build : MonoBehaviour {
         GameObject building = (GameObject)Instantiate(Resources.Load(buildingname), buildindex, Quaternion.identity);
         Guid buildingID = Guid.NewGuid();
         building.name = buildingID.ToString();
-        char playerChar = playerid[0];
-        buildingStorage.GetPlayerBuildingList(playerChar).Add(building);
+        buildingStorage.GetPlayerBuildingList(playerid).Add(building);
         hexGrid.SetBuildingObject(cellindex, building);
 
         //sets stats for building
@@ -50,7 +49,7 @@ public class Build : MonoBehaviour {
 
     public void BuildBuildingMemento(BuildingMemento buildingMemento)
     {
-        string buildingId = buildingMemento.playerID;
+        int buildingId = buildingMemento.playerID;
         string buildingType = buildingMemento.type;
         int cellIndex = buildingMemento.cellIndex;
 
@@ -60,8 +59,7 @@ public class Build : MonoBehaviour {
         //Instantiate the prefab from the resources folder
         GameObject building = (GameObject)Instantiate(Resources.Load(buildingType), buildindex, Quaternion.identity);
         building.name = buildingMemento.uniqueID.ToString();
-        char buildingChar = buildingId[0];
-        buildingStorage.GetPlayerBuildingList(buildingChar).Add(building);
+        buildingStorage.GetPlayerBuildingList(buildingId).Add(building);
         hexGrid.SetBuildingObject(buildingMemento.cellIndex, building);
 
         buildingStats.SetPlayerID(building, buildingMemento.playerID);
@@ -90,8 +88,7 @@ public class Build : MonoBehaviour {
 
     public void DestroyBuilding (int cellindex) {
         GameObject building = hexGrid.GetBuildingObject (cellindex);
-        char playerChar = buildingStats.GetPlayerID(building)[0];
-        buildingStorage.GetPlayerBuildingList(playerChar).Remove(building);
+        buildingStorage.GetPlayerBuildingList(buildingStats.GetPlayerID(building)).Remove(building);
         Destroy (building);
 
         hexGrid.SetBuildingObject(cellindex, null);
@@ -124,8 +121,7 @@ public class Build : MonoBehaviour {
                     {
                         currency.ChangeSouls(-cost);
                         GameObject entityGameObj = hexGrid.GetEntityObject(index);
-                        char playerFirstLetter = entityStats.GetPlayerID(entity)[0];
-                        entityStorage.GetPlayerEntityList(playerFirstLetter).Remove(entityGameObj);
+                        entityStorage.GetPlayerEntityList(entityStats.GetPlayerID(entity)).Remove(entityGameObj);
                         Destroy(entityGameObj);
                         hexGrid.SetEntityObject(index, null);
                         GameObject healthText = GameObject.Find("Health " + entityStats.GetUniqueID(entity).ToString());

@@ -22,7 +22,7 @@ public class HexCell : MonoBehaviour {
     public List<string> groundEffects = new List<string>();
 
     //TODO determine speed with and without using this
-    public List<string> hasVision = new List<string>(); //unity cannot serialize hashset and list better for smaller num of items (<5) anyways
+    public List<int> hasVision = new List<int>(); //unity cannot serialize hashset and list better for smaller num of items (<5) anyways
 
     public bool fog;
 }

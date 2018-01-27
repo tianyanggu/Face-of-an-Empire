@@ -25,6 +25,7 @@ public class SaveLoad {
         //displays files and their names
         string filepath = Application.persistentDataPath;
         DirectoryInfo d = new DirectoryInfo(filepath);
+        Debug.Log(filepath);
         foreach (var file in d.GetFiles("*.gd"))
         {
             Debug.Log(file.Name); 

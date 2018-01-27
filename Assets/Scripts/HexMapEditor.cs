@@ -86,19 +86,15 @@ public class HexMapEditor : MonoBehaviour {
 
 		//-----Selector--------------
 		Debug.Log(currindex);
-		//string currEntityName = hexGrid.GetEntityName (currindex);
         GameObject currEntityObj = hexGrid.GetEntityObject(currindex);
         GameObject currBuildingObj = hexGrid.GetBuildingObject(currindex);
-        //string cleanCurrEntity = Regex.Replace(currEntityName.Substring(2), @"[\d-]", string.Empty);
-        //string cleanCurrBuilding = Regex.Replace(currBuildingName.Substring(2), @"[\d-]", string.Empty);
 
-        char playerChar = playerManager.currPlayer[0];
-        if (entityStorage.GetPlayerEntityList(playerChar).Contains (currEntityObj)) {
+        if (entityStorage.GetPlayerEntityList(playerManager.currPlayer).Contains (currEntityObj)) {
 			selectedindex = currindex;
             //TODO list info for curr entity, display it
 			lockbattle = false;
 		}
-        if (buildingStorage.GetPlayerBuildingList(playerChar).Contains(currBuildingObj)) {
+        if (buildingStorage.GetPlayerBuildingList(playerManager.currPlayer).Contains(currBuildingObj)) {
             buildingManager.DisplayBuilding(currindex);
             //TODO GUI for buildings
         }
@@ -216,16 +212,15 @@ public class HexMapEditor : MonoBehaviour {
 		//determine if all troops moved and turn can end
 		string turnstring = turn.ToString ();
 		if(GUI.Button(new Rect(30,330,60,60), turnstring)) {
-            char currPlayer = playerManager.currPlayer[0];
-            bool checkall = locate.CheckAllPoints (currPlayer);
+            bool checkall = locate.CheckAllPoints (playerManager.currPlayer);
 			if (checkall == true) {
 				turn++;
                 //ensures if player currently selects some entity, they can`t move it after clicking next turn
                 selectedindex = 0;
                 //add points back to units
-                locate.SetAllIdleStatus(false, currPlayer);
-				locate.SetAllMovementPoints(currPlayer);
-				locate.SetAllAttackPoints(currPlayer);
+                locate.SetAllIdleStatus(false, playerManager.currPlayer);
+				locate.SetAllMovementPoints(playerManager.currPlayer);
+				locate.SetAllAttackPoints(playerManager.currPlayer);
                 buildingManager.TickProduction();
                 //next player's turn
                 playerManager.NextActivePlayer();
@@ -238,8 +233,7 @@ public class HexMapEditor : MonoBehaviour {
 
 		//sets remaining units idle
 		if(GUI.Button(new Rect(30,300,60,20), "Set All Idle")) {
-            char currPlayer = playerManager.currPlayer[0];
-            locate.SetAllIdleStatus(true, currPlayer);
+            locate.SetAllIdleStatus(true, playerManager.currPlayer);
 		}
 	}
 }

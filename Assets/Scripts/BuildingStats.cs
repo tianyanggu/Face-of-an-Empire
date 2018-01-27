@@ -39,13 +39,12 @@ public class BuildingStats : MonoBehaviour {
     //TODO recruitment time of building, might fit in entity instead
 
     #region playerID
-    public string GetPlayerID(GameObject building)
+    public int GetPlayerID(GameObject building)
     {
-        string player = building.GetComponent<Building>().playerID;
-        return player;
+        return building.GetComponent<Building>().playerID;
     }
 
-    public void SetPlayerID(GameObject building, string playerID)
+    public void SetPlayerID(GameObject building, int playerID)
     {
         building.GetComponent<Building>().playerID = playerID;
     }

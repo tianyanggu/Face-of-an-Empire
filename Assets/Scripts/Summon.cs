@@ -11,7 +11,7 @@ public class Summon : MonoBehaviour {
     public EntityStats entityStats;
 
     //given an index and the type of summon, summons that entity with the next available name
-    public void SummonEntity (int cellindex, string summonname, string playerid) {
+    public void SummonEntity (int cellindex, string summonname, int playerid) {
 		Vector3 summonindex = hexGrid.GetCellPos(cellindex);
 		summonindex.y = 0.2f;
 
@@ -19,8 +19,7 @@ public class Summon : MonoBehaviour {
         GameObject entity = (GameObject)Instantiate(Resources.Load(summonname), summonindex, Quaternion.identity);
         Guid entityID = Guid.NewGuid();
         entity.name = entityID.ToString();
-        char playerChar = playerid[0];
-        entityStorage.GetPlayerEntityList(playerChar).Add(entity);
+        entityStorage.GetPlayerEntityList(playerid).Add(entity);
         hexGrid.SetEntityObject(cellindex, entity);
 
         //sets stats for entity
@@ -59,18 +58,13 @@ public class Summon : MonoBehaviour {
 
     public void SummonEntityMemento(EntityMemento entityMemento)
     {
-        string playerId = entityMemento.playerID;
-        string entityType = entityMemento.type;
-        int cellIndex = entityMemento.cellIndex;
-
-        Vector3 summonindex = hexGrid.GetCellPos(cellIndex);
+        Vector3 summonindex = hexGrid.GetCellPos(entityMemento.cellIndex);
         summonindex.y = 0.2f;
 
         //Instantiate the prefab from the resources folder
-        GameObject entity = (GameObject)Instantiate(Resources.Load(entityType), summonindex, Quaternion.identity);
+        GameObject entity = (GameObject)Instantiate(Resources.Load(entityMemento.type), summonindex, Quaternion.identity);
         entity.name = entityMemento.uniqueID.ToString();
-        char playerChar = playerId[0];
-        entityStorage.GetPlayerEntityList(playerChar).Add(entity);
+        entityStorage.GetPlayerEntityList(entityMemento.playerID).Add(entity);
         hexGrid.SetEntityObject(entityMemento.cellIndex, entity);
 
         entityStats.SetPlayerID(entity, entityMemento.playerID);
@@ -122,8 +116,7 @@ public class Summon : MonoBehaviour {
     public void KillEntity(int cellindex)
     {
         GameObject entityObj = hexGrid.GetEntityObject(cellindex);
-        char playerFirstLetter = entityStats.GetPlayerID(entityObj)[0];
-        entityStorage.GetPlayerEntityList(playerFirstLetter).Remove(entityObj);
+        entityStorage.GetPlayerEntityList(entityStats.GetPlayerID(entityObj)).Remove(entityObj);
         Destroy(entityObj);
 
         hexGrid.SetEntityObject(cellindex, null);

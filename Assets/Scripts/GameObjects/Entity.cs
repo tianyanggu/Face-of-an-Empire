@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 public class Entity : MonoBehaviour {
-    public string playerID;
+    public int playerID;
     public string type;
     public Guid uniqueID;
     public int cellIndex;

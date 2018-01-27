@@ -53,11 +53,9 @@ public class Vision : MonoBehaviour {
 
     //check each player entity in entitystorage to determine their vision range and remove the fog for that range
     public void EntityCurrPlayerVision() {
-        if (playerManager.currPlayer != string.Empty)
+        if (playerManager.currPlayer != 0)
         {
-            char playerChar = playerManager.currPlayer[0];
-            //Debug.Log(entityStorage.PlayerEntityList(playerChar)[0].name.Substring(2));
-            foreach (GameObject playerEntity in entityStorage.GetPlayerEntityList(playerChar))
+            foreach (GameObject playerEntity in entityStorage.GetPlayerEntityList(playerManager.currPlayer))
             {
                 int visionDistance = entityStats.GetCurrVision(playerEntity);
                 int index = entityStats.GetCellIndex(playerEntity);
@@ -71,7 +69,7 @@ public class Vision : MonoBehaviour {
                     fog.GetComponent<Renderer>().enabled = false;
                 }
             }
-            foreach (GameObject buildingEntity in buildingStorage.GetPlayerBuildingList(playerChar))
+            foreach (GameObject buildingEntity in buildingStorage.GetPlayerBuildingList(playerManager.currPlayer))
             {
                 int visionDistance = buildingStats.GetCurrVision(buildingEntity);
                 int index = buildingStats.GetCellIndex(buildingEntity);
@@ -88,18 +86,14 @@ public class Vision : MonoBehaviour {
                     }
                 }
             }
-
-
         }
-
     }
 
     //check each hex tile to determine player's vision and remove the fog
     public void CurrPlayerVision()
     {
-        if (playerManager.currPlayer != string.Empty)
+        if (playerManager.currPlayer != 0)
         {
-            char playerChar = playerManager.currPlayer[0];
             for (int i = 0; i<hexGrid.size; i++)
             {
                 if (hexGrid.GetHasVision(i).Contains(playerManager.currPlayer))

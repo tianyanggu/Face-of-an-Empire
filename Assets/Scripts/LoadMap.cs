@@ -42,17 +42,17 @@ public class LoadMap : MonoBehaviour {
 
 	public void LoadEntities () {
         Debug.Log("TODO remove Load Test Entities");
-        summon.SummonEntity(14, EntityNames.Necromancer, "AA");
-        summon.SummonEntity(12, EntityNames.Militia, "BB");
-        summon.SummonEntity(15, EntityNames.Militia, "CA");
-        summon.SummonEntity(3, EntityNames.Skeleton, "AA");
-        summon.SummonEntity(18, EntityNames.Zombie, "AA");
+        summon.SummonEntity(14, EntityNames.Necromancer, 1);
+        summon.SummonEntity(12, EntityNames.Militia, 2);
+        summon.SummonEntity(15, EntityNames.Militia, 3);
+        summon.SummonEntity(3, EntityNames.Skeleton, 1);
+        summon.SummonEntity(18, EntityNames.Zombie, 1);
 
         for (int i = 0; i < GameMemento.current.entityMementoList.Count; i++)
         {
             summon.SummonEntityMemento(GameMemento.current.entityMementoList[i]);
             //Add Entity To PlayerLists
-            entityStorage.GetPlayerEntityList(GameMemento.current.entityMementoList[i].playerID[0]).Add(hexGrid.GetEntityObject(GameMemento.current.entityMementoList[i].cellIndex));
+            entityStorage.GetPlayerEntityList(GameMemento.current.entityMementoList[i].playerID).Add(hexGrid.GetEntityObject(GameMemento.current.entityMementoList[i].cellIndex));
         }
     }
 
@@ -62,7 +62,7 @@ public class LoadMap : MonoBehaviour {
         {
             build.BuildBuildingMemento(GameMemento.current.buildingMementoList[i]);
             //Add Building To PlayerLists
-            buildingStorage.GetPlayerBuildingList(GameMemento.current.buildingMementoList[i].playerID[0]).Add(hexGrid.GetBuildingObject(GameMemento.current.buildingMementoList[i].cellIndex));
+            buildingStorage.GetPlayerBuildingList(GameMemento.current.buildingMementoList[i].playerID).Add(hexGrid.GetBuildingObject(GameMemento.current.buildingMementoList[i].cellIndex));
         }
     }
 
@@ -136,7 +136,7 @@ public class LoadMap : MonoBehaviour {
     {
         for (int i = 0; i < hexGrid.size; i++)
         {
-            List<string> vision = GameMemento.current.hexGridHasVisionList[i];
+            List<int> vision = GameMemento.current.hexGridHasVisionList[i];
             hexGrid.SetHasVision(i, vision);
         }
     }

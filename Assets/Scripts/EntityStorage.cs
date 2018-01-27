@@ -7,9 +7,9 @@ public class EntityStorage : MonoBehaviour {
     public PlayerManager playerManager;
     public EntityStats entityStats;
 
-    public List<GameObject> activePlayerAEntities = new List<GameObject>();
-    public List<GameObject> activePlayerBEntities = new List<GameObject>();
-    public List<GameObject> activePlayerCEntities = new List<GameObject>();
+    public List<GameObject> activePlayer1Entities = new List<GameObject>();
+    public List<GameObject> activePlayer2Entities = new List<GameObject>();
+    public List<GameObject> activePlayer3Entities = new List<GameObject>();
 
     void Start () {
 
@@ -28,17 +28,17 @@ public class EntityStorage : MonoBehaviour {
         return new List<string>();
     }
 
-    public List<GameObject> GetPlayerEntityList(char playerID)
+    public List<GameObject> GetPlayerEntityList(int playerID)
     {
         //------Determine Faction Entity List------
         switch (playerID)
         {
-            case 'A':
-                return activePlayerAEntities;
-            case 'B':
-                return activePlayerBEntities;
-            case 'C':
-                return activePlayerCEntities;
+            case 1:
+                return activePlayer1Entities;
+            case 2:
+                return activePlayer2Entities;
+            case 3:
+                return activePlayer3Entities;
         }
         return new List<GameObject>();
     }

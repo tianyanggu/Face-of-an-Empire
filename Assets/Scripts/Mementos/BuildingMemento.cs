@@ -5,7 +5,7 @@ using System;
 
 [System.Serializable]
 public class BuildingMemento {
-    public string playerID;
+    public int playerID;
     public string type;
     public Guid uniqueID;
     public int cellIndex;
