@@ -41,13 +41,6 @@ public class LoadMap : MonoBehaviour {
     }
 
 	public void LoadEntities () {
-        Debug.Log("TODO remove Load Test Entities");
-        summon.SummonEntity(14, EntityNames.Necromancer, 1);
-        summon.SummonEntity(12, EntityNames.Militia, 2);
-        summon.SummonEntity(15, EntityNames.Militia, 3);
-        summon.SummonEntity(3, EntityNames.Skeleton, 1);
-        summon.SummonEntity(18, EntityNames.Zombie, 1);
-
         for (int i = 0; i < GameMemento.current.entityMementoList.Count; i++)
         {
             summon.SummonEntityMemento(GameMemento.current.entityMementoList[i]);
@@ -65,8 +58,6 @@ public class LoadMap : MonoBehaviour {
             buildingStorage.GetPlayerBuildingList(GameMemento.current.buildingMementoList[i].playerID).Add(hexGrid.GetBuildingObject(GameMemento.current.buildingMementoList[i].cellIndex));
         }
     }
-
-    //TODO tomorrow change playerID to int and split playerid to also have teamID of type int
 
     private void SetBuildingHealth(GameObject building, string buildingName, int health)
     {

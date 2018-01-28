@@ -64,6 +64,13 @@ public class HexMapEditor : MonoBehaviour {
             playerManager.SetActivePlayers(); //TODO modify set active players to set new players when new game
             loadMap.LoadNewHexTiles(12, 12);
             loadMap.LoadRandom(12); //sets the seed of the terrain spawn
+            //TODO set above random seed somewhere
+            //TODOTEST remove test entities
+            summon.SummonEntity(14, EntityNames.Necromancer, 1);
+            summon.SummonEntity(12, EntityNames.Militia, 2);
+            summon.SummonEntity(15, EntityNames.Militia, 3);
+            summon.SummonEntity(3, EntityNames.Skeleton, 1);
+            summon.SummonEntity(18, EntityNames.Zombie, 1);
         }
 
         //TODO Overlay to add players
