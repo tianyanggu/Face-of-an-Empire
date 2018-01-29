@@ -16,7 +16,7 @@ public class HexGrid : MonoBehaviour {
 
 	public HexCell[] cells;
 
-	Canvas gridCanvas;
+    Canvas gridCanvas;
 	HexMesh hexMesh;
 
 	void Awake () {

@@ -322,6 +322,7 @@
     <Compile Include="Assets\Scripts\Mementos\GameMemento.cs" />
     <Compile Include="Assets\Scripts\Mementos\HexGridMemento.cs" />
     <Compile Include="Assets\Scripts\PlayerActions\DragCamera.cs" />
+    <Compile Include="Assets\Scripts\PlayerActions\KeyboardCamera.cs" />
     <Compile Include="Assets\Scripts\PlayerActions\Select.cs" />
     <Compile Include="Assets\Scripts\PlayerInfo\PlayerManager.cs" />
     <Compile Include="Assets\Scripts\SaveAndLoad\Game.cs" />
