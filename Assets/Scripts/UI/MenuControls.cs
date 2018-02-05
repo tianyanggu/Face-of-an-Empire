@@ -12,6 +12,7 @@ public class MenuControls : MonoBehaviour {
         {
             game.SetMemento();
             SaveLoad.Save();
+            Debug.Log("Saved!");
         }
 
         if (GUI.Button(new Rect(850, 150, 120, 20), "Load"))

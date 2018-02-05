@@ -26,6 +26,10 @@ public class Game : MonoBehaviour {
         {
             GameMemento.current.activePlayersName.Add(item.Key, item.Value);
         }
+        foreach (var item in playerManager.activePlayersTeam)
+        {
+            GameMemento.current.activePlayersTeam.Add(item.Key, item.Value);
+        }
         foreach (var item in playerManager.activePlayersFaction)
         {
             GameMemento.current.activePlayersFaction.Add(item.Key, item.Value);

@@ -16,6 +16,7 @@ public class HexMapEditor : MonoBehaviour {
 	public Summon summon;
 	public Build build;
 	public Locate locate;
+    public Movement movement;
 	public EntityStorage entityStorage;
 	public BuildingStorage buildingStorage;
     public EntityStats entityStats;
@@ -27,7 +28,7 @@ public class HexMapEditor : MonoBehaviour {
 
 	public int currindex;
 
-	public int selectedindex;
+	public int selIndex;
     public string selectedBuilding;
 
 	public bool lockbattle;
@@ -97,9 +98,17 @@ public class HexMapEditor : MonoBehaviour {
         GameObject currBuildingObj = hexGrid.GetBuildingObject(currindex);
 
         if (entityStorage.GetPlayerEntityList(playerManager.currPlayer).Contains (currEntityObj)) {
-			selectedindex = currindex;
+			selIndex = currindex;
+            //display all possible positions
+            GameObject entity = hexGrid.GetEntityObject(selIndex);
+            int movementPoints = entityStats.GetCurrMovementPoint(entity);
+            List<int> possMovement = movement.GetCellIndexesBlockers(selIndex, movementPoints);
+            for (int i=0; i<possMovement.Count; i++)
+            {
+                hexGrid.cells[possMovement[i]].EnableHighlight(Color.white);
+            }
             //TODO list info for curr entity, display it
-			lockbattle = false;
+            lockbattle = false;
 		}
         if (buildingStorage.GetPlayerBuildingList(playerManager.currPlayer).Contains(currBuildingObj)) {
             buildingManager.DisplayBuilding(currindex);
@@ -107,7 +116,7 @@ public class HexMapEditor : MonoBehaviour {
         }
         //ensures attacks only happen once per update 
 		if (lockbattle == false) {
-			bool checkAttHappen = battle.Attack (selectedindex, currindex);
+			bool checkAttHappen = battle.Attack (selIndex, currindex);
 			if (checkAttHappen == true) {
 				lockbattle = true;
 			}
@@ -223,7 +232,7 @@ public class HexMapEditor : MonoBehaviour {
 			if (checkall == true) {
 				turn++;
                 //ensures if player currently selects some entity, they can`t move it after clicking next turn
-                selectedindex = 0;
+                selIndex = 0;
                 //add points back to units
                 locate.SetAllIdleStatus(false, playerManager.currPlayer);
 				locate.SetAllMovementPoints(playerManager.currPlayer);

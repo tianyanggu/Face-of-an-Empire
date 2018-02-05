@@ -10,9 +10,7 @@ public static class FactionNames
 
 public class PlayerManager : MonoBehaviour {
 
-    //Players are assigned a code for the game to recognize them
-    //e.g. CA is player C and is on team A
-
+    //Players are assigned an int for the game to recognize them
     public Dictionary<int, string> activePlayersName = new Dictionary<int, string>();
     public Dictionary<int, string> activePlayersFaction = new Dictionary<int, string>();
     public Dictionary<int, int> activePlayersOrder = new Dictionary<int, int>(); // <order, playerid>
@@ -23,6 +21,7 @@ public class PlayerManager : MonoBehaviour {
     public void SetActivePlayers()
     {
         activePlayersName = GameMemento.current.activePlayersName;
+        activePlayersTeam = GameMemento.current.activePlayersTeam;
         activePlayersFaction = GameMemento.current.activePlayersFaction;
         activePlayersOrder = GameMemento.current.activePlayersOrder;
         currPlayerOrder = GameMemento.current.currPlayerOrder;
@@ -41,6 +40,12 @@ public class PlayerManager : MonoBehaviour {
             activePlayersFaction.Add(1, FactionNames.Undead);
             activePlayersFaction.Add(2, FactionNames.Human);
             activePlayersFaction.Add(3, FactionNames.Human);
+        }
+        if (activePlayersTeam.Count == 0)
+        {
+            activePlayersTeam.Add(1, 1);
+            activePlayersTeam.Add(2, 1);
+            activePlayersTeam.Add(3, 2);
         }
         if (activePlayersOrder.Count == 0)
         {
