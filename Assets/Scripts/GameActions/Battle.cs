@@ -32,10 +32,10 @@ public class Battle : MonoBehaviour {
 	private int attackercurrmovepoint = 0;
     private int attackercurrattpoint = 0;
 
-	public bool Attack (int selectedindex, int currindex) {
+	public bool Attack (int selIndex, int currindex) {
         //------Parses Entities------
-        GameObject selectedEntity = hexGrid.GetEntityObject(selectedindex);
-        if (selectedEntity == null) {
+        GameObject selEntity = hexGrid.GetEntityObject(selIndex);
+        if (selEntity == null) {
 			return false;
 		}
         GameObject currEntity = hexGrid.GetEntityObject(currindex);
@@ -43,44 +43,42 @@ public class Battle : MonoBehaviour {
         //get coordinates of currEntity or empty tile
         Vector3 cellcoord = hexGrid.GetCellPos(currindex);
 
-        GetMovementInfo (selectedEntity);
+        GetMovementInfo (selEntity);
 
 		//------Movement Empty Cell------
 		if (currEntity == null) {
-			//determine movement tiles
-			List<int> possmovement = null;
+			//get movement tiles from validMovementPositions
 			if (attackercurrmovepoint == 0) {
 				return false;
 			}
-			else if (attackermovepoint == 1 && attackercurrmovepoint == 1) {
-				possmovement = movement.GetCellIndexesOneHexAway (selectedindex);
-			} else if (attackermovepoint != 1) {
-				possmovement = movement.GetCellIndexesBlockers (selectedindex, attackercurrmovepoint);
-			}
+            //TODO movement for 1 tile position
             
-            if (possmovement.Contains (currindex)) {
+            if (selEntity.GetComponent<Entity>().validMovementPositions.Contains (currindex)) {
 				//get min movement points used
 				if (attackermovepoint == 1 && attackercurrmovepoint == 1) {
-					SetMovementPoints (selectedEntity, 1);
+					SetMovementPoints (selEntity, 1);
 				} else if (attackermovepoint != 1) {
-					int minmove = movement.GetMovementPointsUsed (selectedindex, currindex, attackercurrmovepoint);
+					int minmove = movement.GetMovementPointsUsed (selIndex, currindex, attackercurrmovepoint);
 					//set new movement points remaining
-					SetMovementPoints (selectedEntity, minmove);
+					SetMovementPoints (selEntity, minmove);
 				}
 
-				GameObject playerHealth = GameObject.Find ("Health " + entityStats.GetUniqueID(selectedEntity).ToString());
-                selectedEntity.transform.position = cellcoord;
+				GameObject playerHealth = GameObject.Find ("Health " + entityStats.GetUniqueID(selEntity).ToString());
+                selEntity.transform.position = cellcoord;
 				playerHealth.transform.position = new Vector3 (cellcoord.x, cellcoord.y + 0.1f, cellcoord.z);
-                hexGrid.SetEntityObject(selectedindex, null);
-                hexGrid.SetEntityObject(currindex, selectedEntity);
+                hexGrid.SetEntityObject(selIndex, null);
+                hexGrid.SetEntityObject(currindex, selEntity);
 
-				return true;
+                movement.UnhighlightPossMovement(selEntity);
+                movement.HighlightPossMovement(selEntity, currindex);
+
+                return true;
 			}
 		}
 
         //------Encounter Enemy------
         //check if on same team
-        int selTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(selectedEntity)];
+        int selTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(selEntity)];
         int currTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(currEntity)];
         if (selTeam == currTeam)
         {
@@ -88,7 +86,7 @@ public class Battle : MonoBehaviour {
         }
 
         if (selTeam != currTeam && currEntity != null) {
-            GameObject attacker = selectedEntity;
+            GameObject attacker = selEntity;
             GameObject defender = currEntity;
 
 			GetAttackerInfo (attacker);
@@ -103,9 +101,9 @@ public class Battle : MonoBehaviour {
 			//------Determine Attack Range------
             //TODO attacker range 3+ tiles away
 			if (attackerrange == 1) {
-				possattacktiles = movement.GetCellIndexesOneHexAway (selectedindex);
+				possattacktiles = movement.GetCellIndexesOneHexAway (selIndex);
 			} else if (attackerrange >= 2) {
-				possattacktiles = movement.GetCellIndexesTwoHexAway (selectedindex);
+				possattacktiles = movement.GetCellIndexesTwoHexAway (selIndex);
             }
 
             //------Calc Defender New Health-------
@@ -145,15 +143,15 @@ public class Battle : MonoBehaviour {
                         summon.KillEntity(currindex);
 					}
 					if (attackercurrhealth <= 0) {
-                        summon.KillEntity(selectedindex);
+                        summon.KillEntity(selIndex);
                     } 
 					if (attackercurrhealth > 0 && defendercurrhealth <= 0) {
                         //move to defender's position if have enough movement points and is not ranged unit
-                        int minmove = movement.GetMovementPointsUsed (selectedindex, currindex, attackercurrmovepoint);
+                        int minmove = movement.GetMovementPointsUsed (selIndex, currindex, attackercurrmovepoint);
 						if (attackercurrmovepoint >= minmove && attackerrange == 1) {
 							attacker.transform.position = cellcoord;
                             hexGrid.SetEntityObject (currindex, attacker);
-                            GameObject attackerHealthText = GameObject.Find ("Health " + entityStats.GetUniqueID(selectedEntity).ToString());
+                            GameObject attackerHealthText = GameObject.Find ("Health " + entityStats.GetUniqueID(selEntity).ToString());
 							attackerHealthText.transform.position = new Vector3 (cellcoord.x, cellcoord.y + 0.1f, cellcoord.z);
 							SetMovementPoints (attacker, minmove);
 						} else if (attackerrange == 2) {
@@ -163,7 +161,7 @@ public class Battle : MonoBehaviour {
 					}
 
                     //Set New Info
-                    SetAttackerInfo (attacker, entityStats.GetUniqueID(selectedEntity).ToString());
+                    SetAttackerInfo (attacker, entityStats.GetUniqueID(selEntity).ToString());
 					SetDefenderInfo (defender, entityStats.GetUniqueID(currEntity).ToString());
 
 					return true;

@@ -6,11 +6,37 @@ using System.Linq;
 public class Movement : MonoBehaviour {
 
 	public HexGrid hexGrid;
+    public EntityStats entityStats;
+
 	public List<int> availablepositions;
 	public List<int> possminmovepoints;
 
-	//get all cell indexes one hex away
-	public List<int> GetCellIndexesOneHexAway (int index) {
+    public void HighlightPossMovement(GameObject entity, int selIndex)
+    {
+        if (entity == null) return;
+        //note: don't instantiate new List<int> right away and set it as entity.GetComponent<Entity>().validMovementPositions
+        //for some reason reference is not kept of the original list and thus is not set
+        entity.GetComponent<Entity>().validMovementPositions = GetCellIndexesBlockers(selIndex, entityStats.GetCurrMovementPoint(entity));
+        List<int> positions = entity.GetComponent<Entity>().validMovementPositions;
+        for (int i = 0; i < positions.Count; i++)
+        {
+            hexGrid.cells[positions[i]].EnableHighlight(Color.white);
+        }
+    }
+
+    public void UnhighlightPossMovement(GameObject entity)
+    {
+        if (entity == null) return;
+        List<int> validMovementPositions = entity.GetComponent<Entity>().validMovementPositions;
+        for (int i = 0; i < validMovementPositions.Count; i++)
+        {
+            hexGrid.cells[validMovementPositions[i]].DisableHighlight();
+        }
+        validMovementPositions.Clear();
+    }
+
+    //get all cell indexes one hex away
+    public List<int> GetCellIndexesOneHexAway (int index) {
 		List<int> positions = new List<int> ();
 		HexCoordinates coord = hexGrid.GetCellCoord (index);
 		int coordx = coord.X;

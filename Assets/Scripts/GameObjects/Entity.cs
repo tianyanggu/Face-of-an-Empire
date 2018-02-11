@@ -29,4 +29,7 @@ public class Entity : MonoBehaviour {
     public int currmovementpoint;
 
     public bool idle;
+
+    //Temp Info
+    public List<int> validMovementPositions = new List<int>();
 }

@@ -301,6 +301,7 @@
     <Compile Include="Assets\Scripts\Building\BuildingStorage.cs" />
     <Compile Include="Assets\Scripts\Economy\Currency.cs" />
     <Compile Include="Assets\Scripts\Economy\Souls.cs" />
+    <Compile Include="Assets\Scripts\EffectStats.cs" />
     <Compile Include="Assets\Scripts\Entity\EntityStats.cs" />
     <Compile Include="Assets\Scripts\Entity\EntityStorage.cs" />
     <Compile Include="Assets\Scripts\Entity\Summon.cs" />

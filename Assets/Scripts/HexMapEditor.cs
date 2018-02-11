@@ -98,15 +98,10 @@ public class HexMapEditor : MonoBehaviour {
         GameObject currBuildingObj = hexGrid.GetBuildingObject(currindex);
 
         if (entityStorage.GetPlayerEntityList(playerManager.currPlayer).Contains (currEntityObj)) {
-			selIndex = currindex;
+            movement.UnhighlightPossMovement(hexGrid.GetEntityObject(selIndex));
+            selIndex = currindex;
             //display all possible positions
-            GameObject entity = hexGrid.GetEntityObject(selIndex);
-            int movementPoints = entityStats.GetCurrMovementPoint(entity);
-            List<int> possMovement = movement.GetCellIndexesBlockers(selIndex, movementPoints);
-            for (int i=0; i<possMovement.Count; i++)
-            {
-                hexGrid.cells[possMovement[i]].EnableHighlight(Color.white);
-            }
+            movement.HighlightPossMovement(currEntityObj, selIndex);
             //TODO list info for curr entity, display it
             lockbattle = false;
 		}
@@ -240,8 +235,8 @@ public class HexMapEditor : MonoBehaviour {
                 buildingManager.TickProduction();
                 //next player's turn
                 playerManager.NextActivePlayer();
-                vision.AddMissingFog();
-                vision.EntityCurrPlayerVision();
+                //vision.AddMissingFog();
+                //vision.EntityCurrPlayerVision();
                 //ai actions
                 //aiBehaviour.Actions(15);
             }
