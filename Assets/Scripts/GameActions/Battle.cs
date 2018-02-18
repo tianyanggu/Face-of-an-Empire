@@ -15,203 +15,228 @@ public class Battle : MonoBehaviour {
     public EntityStats entityStats;
     public PlayerManager playerManager;
 
+    //entity
+    GameObject selEntity { get; set; }
+    GameObject currEntity { get; set; }
+    Vector3 cellCoord { get; set; }
+
     //entity stats
-    private int attackerdmg = 0;
-	private int attackercurrhealth = 0;
-	private int attackerrange = 0;
-	private int attackerrangedmg = 0;
-	private int attackerarmor = 0;
-	private int attackerarmorpiercing = 0;
-	private int defenderdmg = 0;
-	private int defendercurrhealth = 0;
-	private int defenderarmor = 0;
-	private int defenderarmorpiercing = 0;
+    private int attackerDmg = 0;
+	private int attackerCurrHealth = 0;
+	private int attackerRange = 0;
+	private int attackerRangeDmg = 0;
+	private int attackerArmor = 0;
+	private int attackerArmorPiercing = 0;
+	private int defenderDmg = 0;
+	private int defenderCurrHealth = 0;
+	private int defenderArmor = 0;
+	private int defenderArmorPiercing = 0;
 
 	//entity action points
-	private int attackermovepoint = 0;
-	private int attackercurrmovepoint = 0;
-    private int attackercurrattpoint = 0;
+	private int attackerMovepoint = 0;
+	private int attackerCurrMovepoint = 0;
+    private int attackerCurrAttpoint = 0;
 
-	public bool Attack (int selIndex, int currindex) {
-        //------Parses Entities------
-        GameObject selEntity = hexGrid.GetEntityObject(selIndex);
-        if (selEntity == null) {
-			return false;
-		}
-        GameObject currEntity = hexGrid.GetEntityObject(currindex);
-
-        //get coordinates of currEntity or empty tile
-        Vector3 cellcoord = hexGrid.GetCellPos(currindex);
+	public void PerformAction (int selIndex, int currIndex) {
+        selEntity = hexGrid.GetEntityObject(selIndex);
+        currEntity = hexGrid.GetEntityObject(currIndex);
+        cellCoord = hexGrid.GetCellPos(currIndex);
 
         GetMovementInfo (selEntity);
-
 		//------Movement Empty Cell------
 		if (currEntity == null) {
-			//get movement tiles from validMovementPositions
-			if (attackercurrmovepoint == 0) {
-				return false;
-			}
-            //TODO movement for 1 tile position
-            
-            if (selEntity.GetComponent<Entity>().validMovementPositions.Contains (currindex)) {
-				//get min movement points used
-				if (attackermovepoint == 1 && attackercurrmovepoint == 1) {
-					SetMovementPoints (selEntity, 1);
-				} else if (attackermovepoint != 1) {
-					int minmove = movement.GetMovementPointsUsed (selIndex, currindex, attackercurrmovepoint);
-					//set new movement points remaining
-					SetMovementPoints (selEntity, minmove);
-				}
+            MovementAction(selIndex, currIndex);
+        }
+        //------Encounter Entity------
+        else
+        {
+            AttackAction(selIndex, currIndex);
+        }
+	}
 
-				GameObject playerHealth = GameObject.Find ("Health " + entityStats.GetUniqueID(selEntity).ToString());
-                selEntity.transform.position = cellcoord;
-				playerHealth.transform.position = new Vector3 (cellcoord.x, cellcoord.y + 0.1f, cellcoord.z);
-                hexGrid.SetEntityObject(selIndex, null);
-                hexGrid.SetEntityObject(currindex, selEntity);
-
-                movement.UnhighlightPossMovement(selEntity);
-                movement.HighlightPossMovement(selEntity, currindex);
-
-                return true;
-			}
-		}
-
-        //------Encounter Enemy------
+    public void AttackAction(int selIndex, int currIndex)
+    {
         //check if on same team
         int selTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(selEntity)];
         int currTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(currEntity)];
         if (selTeam == currTeam)
         {
-            return false;
+            return;
         }
 
-        if (selTeam != currTeam && currEntity != null) {
+        if (selTeam != currTeam && currEntity != null)
+        {
             GameObject attacker = selEntity;
             GameObject defender = currEntity;
 
-			GetAttackerInfo (attacker);
-			GetDefenderInfo (defender);
+            GetAttackerInfo(attacker);
+            GetDefenderInfo(defender);
 
-			//check if you can attack
-			if (attackercurrattpoint == 0) {
-                return false;
+            //check if you can attack
+            if (attackerCurrAttpoint == 0)
+            {
+                return;
             }
-			List<int> possattacktiles = null;
+            List<int> possattacktiles = null;
 
-			//------Determine Attack Range------
+            //------Determine Attack Range------
             //TODO attacker range 3+ tiles away
-			if (attackerrange == 1) {
-				possattacktiles = movement.GetCellIndexesOneHexAway (selIndex);
-			} else if (attackerrange >= 2) {
-				possattacktiles = movement.GetCellIndexesTwoHexAway (selIndex);
+            if (attackerRange == 1)
+            {
+                possattacktiles = movement.GetCellIndexesOneHexAway(selIndex);
+            }
+            else if (attackerRange >= 2)
+            {
+                possattacktiles = movement.GetCellIndexesTwoHexAway(selIndex);
             }
 
             //------Calc Defender New Health-------
-            if (possattacktiles.Contains (currindex)) {
-				if (defendercurrhealth > 0) {
-					//if melee attack 
-					if (attackerrange == 1) {
-						//armor piercing damage is minimum of armor or piercing damage
-						int attackerpierceddmg = Mathf.Min(defenderarmor, attackerarmorpiercing);
-						int defenderpierceddmg = Mathf.Min(attackerarmor, defenderarmorpiercing);
-						//calc dmg to attacker and defender health, damage cannot be lower than 1
-						int totalattackerdmg = attackerdmg - defenderarmor + attackerpierceddmg;
-						if (totalattackerdmg < 1) {
-							totalattackerdmg = 1;
-						}
-						int totaldefenderdmg = defenderdmg - attackerarmor + defenderpierceddmg;
-						if (totaldefenderdmg < 1) {
-							totaldefenderdmg = 1;
-						}
-						defendercurrhealth = defendercurrhealth - totalattackerdmg;
-                        attackercurrhealth = attackercurrhealth - totaldefenderdmg;
+            if (possattacktiles.Contains(currIndex))
+            {
+                //if melee attack 
+                if (attackerRange == 1)
+                {
+                    //armor piercing damage is minimum of armor or piercing damage
+                    int attackerpierceddmg = Mathf.Min(defenderArmor, attackerArmorPiercing);
+                    int defenderpierceddmg = Mathf.Min(attackerArmor, defenderArmorPiercing);
+                    //calc dmg to attacker and defender health, damage cannot be lower than 1
+                    int totalattackerdmg = attackerDmg - defenderArmor + attackerpierceddmg;
+                    if (totalattackerdmg < 1)
+                    {
+                        totalattackerdmg = 1;
+                    }
+                    int totaldefenderdmg = defenderDmg - attackerArmor + defenderpierceddmg;
+                    if (totaldefenderdmg < 1)
+                    {
+                        totaldefenderdmg = 1;
+                    }
+                    defenderCurrHealth = defenderCurrHealth - totalattackerdmg;
+                    attackerCurrHealth = attackerCurrHealth - totaldefenderdmg;
 
-					//range attack
-					} else if (attackerrange >= 2) {
-                        //armor piercing damage is minimum of armor or piercing damage
-                        int attackerpierceddmg = Mathf.Min(defenderarmor, attackerarmorpiercing);
-						//calc dmg to defender health
-						int totalattackerrangedmg = attackerrangedmg - defenderarmor + attackerpierceddmg;
-						if (totalattackerrangedmg < 1) {
-							totalattackerrangedmg = 1;
-						}
-                        defendercurrhealth = defendercurrhealth - totalattackerrangedmg;
-					}
+                    //range attack
+                }
+                else if (attackerRange >= 2)
+                {
+                    //armor piercing damage is minimum of armor or piercing damage
+                    int attackerpierceddmg = Mathf.Min(defenderArmor, attackerArmorPiercing);
+                    //calc dmg to defender health
+                    int totalattackerrangedmg = attackerRangeDmg - defenderArmor + attackerpierceddmg;
+                    if (totalattackerrangedmg < 1)
+                    {
+                        totalattackerrangedmg = 1;
+                    }
+                    defenderCurrHealth = defenderCurrHealth - totalattackerrangedmg;
+                }
 
-					//check new status
-					if (defendercurrhealth <= 0) {
-                        summon.KillEntity(currindex);
-					}
-					if (attackercurrhealth <= 0) {
-                        summon.KillEntity(selIndex);
-                    } 
-					if (attackercurrhealth > 0 && defendercurrhealth <= 0) {
-                        //move to defender's position if have enough movement points and is not ranged unit
-                        int minmove = movement.GetMovementPointsUsed (selIndex, currindex, attackercurrmovepoint);
-						if (attackercurrmovepoint >= minmove && attackerrange == 1) {
-							attacker.transform.position = cellcoord;
-                            hexGrid.SetEntityObject (currindex, attacker);
-                            GameObject attackerHealthText = GameObject.Find ("Health " + entityStats.GetUniqueID(selEntity).ToString());
-							attackerHealthText.transform.position = new Vector3 (cellcoord.x, cellcoord.y + 0.1f, cellcoord.z);
-							SetMovementPoints (attacker, minmove);
-						} else if (attackerrange == 2) {
-                            //do nothing
-                            //TODO remove if nothing needed in future for attack range 2
-                        }
-					}
+                //check new status
+                if (defenderCurrHealth <= 0)
+                {
+                    summon.KillEntity(currIndex);
+                }
+                if (attackerCurrHealth <= 0)
+                {
+                    summon.KillEntity(selIndex);
+                }
+                if (attackerCurrHealth > 0 && defenderCurrHealth <= 0)
+                {
+                    //move to defender's position if have enough movement points and is not ranged unit
+                    int minmove = movement.GetMovementPointsUsed(selIndex, currIndex, attackerCurrMovepoint);
+                    if (attackerCurrMovepoint >= minmove && attackerRange == 1)
+                    {
+                        attacker.transform.position = cellCoord;
+                        hexGrid.SetEntityObject(currIndex, attacker);
+                        GameObject attackerHealthText = GameObject.Find("Health " + entityStats.GetUniqueID(selEntity).ToString());
+                        attackerHealthText.transform.position = new Vector3(cellCoord.x, cellCoord.y + 0.1f, cellCoord.z);
+                        SetMovementPoints(attacker, minmove);
+                    }
+                    else if (attackerRange == 2)
+                    {
+                        //do nothing
+                        //TODO remove if nothing needed in future for attack range 2
+                    }
+                }
 
-                    //Set New Info
-                    SetAttackerInfo (attacker, entityStats.GetUniqueID(selEntity).ToString());
-					SetDefenderInfo (defender, entityStats.GetUniqueID(currEntity).ToString());
+                //Set New Info
+                SetAttackerInfo(attacker, entityStats.GetUniqueID(selEntity).ToString());
+                SetDefenderInfo(defender, entityStats.GetUniqueID(currEntity).ToString());
+            }
+        }
+    }
 
-					return true;
-				}
-			}
-		}
+    public void MovementAction(int selIndex, int currIndex)
+    {
+        //get movement tiles from validMovementPositions
+        if (attackerCurrMovepoint == 0)
+        {
+            return;
+        }
+        //TODO movement for 1 tile position
 
-		return false;
-	}
+        if (selEntity.GetComponent<Entity>().validMovementPositions.Contains(currIndex))
+        {
+            //get min movement points used
+            if (attackerMovepoint == 1 && attackerCurrMovepoint == 1)
+            {
+                SetMovementPoints(selEntity, 1);
+            }
+            else if (attackerMovepoint != 1)
+            {
+                int minmove = movement.GetMovementPointsUsed(selIndex, currIndex, attackerCurrMovepoint);
+                //set new movement points remaining
+                SetMovementPoints(selEntity, minmove);
+            }
 
-	void GetAttackerInfo(GameObject attacker) {
-        attackercurrattpoint = entityStats.GetCurrAttackPoint(attacker);
-        attackerdmg = entityStats.GetCurrAttackDmg(attacker);
-        attackerrangedmg = entityStats.GetCurrRangedAttackDmg(attacker);
-        attackercurrhealth = entityStats.GetCurrHealth(attacker);
-        attackerrange = entityStats.GetCurrRange(attacker);
-        attackerarmor = entityStats.GetCurrArmor(attacker);
-        attackerarmorpiercing = entityStats.GetCurrArmorPiercing(attacker);
+            GameObject playerHealth = GameObject.Find("Health " + entityStats.GetUniqueID(selEntity).ToString());
+            selEntity.transform.position = cellCoord;
+            playerHealth.transform.position = new Vector3(cellCoord.x, cellCoord.y + 0.1f, cellCoord.z);
+            hexGrid.SetEntityObject(selIndex, null);
+            hexGrid.SetEntityObject(currIndex, selEntity);
+
+            movement.UnhighlightPossMovement(selEntity);
+            movement.HighlightPossMovement(selEntity, currIndex);
+        }
+    }
+
+    void GetAttackerInfo(GameObject attacker) {
+        attackerCurrAttpoint = entityStats.GetCurrAttackPoint(attacker);
+        attackerDmg = entityStats.GetCurrAttackDmg(attacker);
+        attackerRangeDmg = entityStats.GetCurrRangedAttackDmg(attacker);
+        attackerCurrHealth = entityStats.GetCurrHealth(attacker);
+        attackerRange = entityStats.GetCurrRange(attacker);
+        attackerArmor = entityStats.GetCurrArmor(attacker);
+        attackerArmorPiercing = entityStats.GetCurrArmorPiercing(attacker);
     }
 
 	void GetDefenderInfo(GameObject defender) {
-        defenderdmg = entityStats.GetCurrAttackDmg(defender);
-        defendercurrhealth = entityStats.GetCurrHealth(defender);
-        defenderarmor = entityStats.GetCurrArmor(defender);
-        defenderarmorpiercing = entityStats.GetCurrArmorPiercing(defender);
+        defenderDmg = entityStats.GetCurrAttackDmg(defender);
+        defenderCurrHealth = entityStats.GetCurrHealth(defender);
+        defenderArmor = entityStats.GetCurrArmor(defender);
+        defenderArmorPiercing = entityStats.GetCurrArmorPiercing(defender);
     }
 
 	void SetAttackerInfo(GameObject attacker, string selectedentity) {
-        entityStats.SetCurrHealth(attacker, attackercurrhealth);
+        entityStats.SetCurrHealth(attacker, attackerCurrHealth);
         Text atthealthtext = GameObject.Find("Health " + selectedentity).GetComponent<Text>();
-        atthealthtext.text = attackercurrhealth.ToString();
+        atthealthtext.text = attackerCurrHealth.ToString();
         entityStats.SetCurrAttackPoint(attacker, entityStats.GetCurrAttackPoint(attacker) - 1);
 	}
 
 	void SetDefenderInfo(GameObject defender, string currEntity) {
-        entityStats.SetCurrHealth(defender, defendercurrhealth);
+        entityStats.SetCurrHealth(defender, defenderCurrHealth);
         Text defhealthtext = GameObject.Find("Health " + currEntity).GetComponent<Text>();
-        defhealthtext.text = defendercurrhealth.ToString();
+        defhealthtext.text = defenderCurrHealth.ToString();
 	}
 
 
     //find movement points
     void GetMovementInfo(GameObject attacker) {
-        attackermovepoint = entityStats.GetCurrMaxMovementPoint(attacker);
-        attackercurrmovepoint = entityStats.GetCurrMovementPoint(attacker);
+        attackerMovepoint = entityStats.GetCurrMaxMovementPoint(attacker);
+        attackerCurrMovepoint = entityStats.GetCurrMovementPoint(attacker);
 	}
 
     //set new movement points
     void SetMovementPoints(GameObject attacker, int change) {
-        entityStats.SetCurrMovementPoint(attacker, attackercurrmovepoint - change);
+        entityStats.SetCurrMovementPoint(attacker, attackerCurrMovepoint - change);
 	}
 
 	void CalcSouls(string faction, string diedentity) {

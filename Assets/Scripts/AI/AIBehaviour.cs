@@ -51,7 +51,7 @@ public class AIBehaviour : MonoBehaviour {
 					attackPos.Add (attIndex);
 				}
 			}
-			battle.Attack (eindex, attackPos[0]);
+			battle.PerformAction (eindex, attackPos[0]);
 			//battle.Attack (attackPos[0], decideAttEntity);
 		}
         //if cannot reach right away, move closest possible

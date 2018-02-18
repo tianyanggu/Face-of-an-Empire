@@ -85,6 +85,7 @@ public class Game : MonoBehaviour {
         EntityMemento.armorpiercing = hexGrid.cells[i].entityObj.GetComponent<Entity>().armorpiercing;
         EntityMemento.rangedarmorpiercing = hexGrid.cells[i].entityObj.GetComponent<Entity>().rangedarmorpiercing;
         EntityMemento.vision = hexGrid.cells[i].entityObj.GetComponent<Entity>().vision;
+        EntityMemento.specialActions = hexGrid.cells[i].entityObj.GetComponent<Entity>().specialActions;
         EntityMemento.permaEffects = hexGrid.cells[i].entityObj.GetComponent<Entity>().permaEffects;
         EntityMemento.tempEffects = hexGrid.cells[i].entityObj.GetComponent<Entity>().tempEffects;
 

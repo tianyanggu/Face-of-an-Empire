@@ -324,6 +324,54 @@ public class EntityStats : MonoBehaviour {
     }
     #endregion
 
+    #region specialActions
+    public List<string> GetSpecialActions(string entity)
+    {
+        switch (entity)
+        {
+            case EntityNames.Zombie:
+                return new List<string>() { "Infect" };
+            case EntityNames.Skeleton:
+                return new List<string>();
+            case EntityNames.Necromancer:
+                return new List<string>() { "Strengthen Binding", "Agony" };
+            case EntityNames.SkeletonArcher:
+                return new List<string>();
+            case EntityNames.ArmoredSkeleton:
+                return new List<string>();
+            case EntityNames.DeathKnight:
+                return new List<string>();
+
+            case EntityNames.Militia:
+                return new List<string>();
+            case EntityNames.Archer:
+                return new List<string>();
+            case EntityNames.Longbowman:
+                return new List<string> { "Barrage" };
+            case EntityNames.Crossbowman:
+                return new List<string>();
+            case EntityNames.Footman:
+                return new List<string>();
+            case EntityNames.MountedKnight:
+                return new List<string>();
+            case EntityNames.LightsChosen:
+                return new List<string>();
+        }
+        return new List<string>();
+    }
+
+    public List<string> GetCurrSpecialActions(GameObject entity)
+    {
+        List<string> actions = entity.GetComponent<Entity>().specialActions;
+        return actions;
+    }
+
+    public void SetSpecialActions(GameObject entity, List<string> actions)
+    {
+        entity.GetComponent<Entity>().specialActions = actions;
+    }
+    #endregion
+
     #region movementpoint
     public int GetMaxMovementPoint(string entity)
     {
@@ -672,7 +720,42 @@ public class EntityStats : MonoBehaviour {
     #endregion
 
     #region permaEffects
-    public List<string> GetPermaEffects(GameObject entity)
+    public List<string> GetPermaEffects(string entity)
+    {
+        switch (entity)
+        {
+            case EntityNames.Zombie:
+                return new List<string>();
+            case EntityNames.Skeleton:
+                return new List<string>();
+            case EntityNames.Necromancer:
+                return new List<string>() { "EmpowerUndead" };
+            case EntityNames.SkeletonArcher:
+                return new List<string>();
+            case EntityNames.ArmoredSkeleton:
+                return new List<string>();
+            case EntityNames.DeathKnight:
+                return new List<string>();
+
+            case EntityNames.Militia:
+                return new List<string>();
+            case EntityNames.Archer:
+                return new List<string>();
+            case EntityNames.Longbowman:
+                return new List<string>();
+            case EntityNames.Crossbowman:
+                return new List<string>();
+            case EntityNames.Footman:
+                return new List<string>();
+            case EntityNames.MountedKnight:
+                return new List<string>();
+            case EntityNames.LightsChosen:
+                return new List<string>() { "LightsCourage" };
+        }
+        return new List<string>();
+    }
+
+    public List<string> GetCurrPermaEffects(GameObject entity)
     {
         List<string> permaEffects = entity.GetComponent<Entity>().permaEffects;
         return permaEffects;
@@ -695,6 +778,41 @@ public class EntityStats : MonoBehaviour {
     #endregion
 
     #region tempEffects
+    public List<KeyValuePair<string, int>> GetTempEffects(string entity)
+    {
+        switch (entity)
+        {
+            case EntityNames.Zombie:
+                return new List<KeyValuePair<string, int>>() { new KeyValuePair<string, int>("Bound", 5) };
+            case EntityNames.Skeleton:
+                return new List<KeyValuePair<string, int>>() { new KeyValuePair<string, int>("Bound", 5) };
+            case EntityNames.Necromancer:
+                return new List<KeyValuePair<string, int>>();
+            case EntityNames.SkeletonArcher:
+                return new List<KeyValuePair<string, int>>() { new KeyValuePair<string, int>("Bound", 5) };
+            case EntityNames.ArmoredSkeleton:
+                return new List<KeyValuePair<string, int>>() { new KeyValuePair<string, int>("Bound", 5) };
+            case EntityNames.DeathKnight:
+                return new List<KeyValuePair<string, int>>() { new KeyValuePair<string, int>("Bound", 5) };
+
+            case EntityNames.Militia:
+                return new List<KeyValuePair<string, int>>();
+            case EntityNames.Archer:
+                return new List<KeyValuePair<string, int>>();
+            case EntityNames.Longbowman:
+                return new List<KeyValuePair<string, int>>();
+            case EntityNames.Crossbowman:
+                return new List<KeyValuePair<string, int>>();
+            case EntityNames.Footman:
+                return new List<KeyValuePair<string, int>>();
+            case EntityNames.MountedKnight:
+                return new List<KeyValuePair<string, int>>();
+            case EntityNames.LightsChosen:
+                return new List<KeyValuePair<string, int>>();
+        }
+        return new List<KeyValuePair<string, int>>();
+    }
+
     public List<KeyValuePair<string,int>> GetTempEffects(GameObject entity)
     {
         List<KeyValuePair<string, int>> tempEffects = entity.GetComponent<Entity>().tempEffects;

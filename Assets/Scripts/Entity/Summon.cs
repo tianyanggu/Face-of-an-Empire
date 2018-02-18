@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Text.RegularExpressions;
 using System;
+using System.Collections.Generic;
 
 public class Summon : MonoBehaviour {
 	public HexGrid hexGrid;
@@ -53,6 +54,13 @@ public class Summon : MonoBehaviour {
         int vision = entityStats.GetVision(summonname);
         entityStats.SetVision(entity, vision);
 
+        List<string> specialActions = entityStats.GetSpecialActions(summonname);
+        entityStats.SetSpecialActions(entity, specialActions);
+        List<string> permaEffects = entityStats.GetPermaEffects(summonname);
+        entityStats.SetPermaEffects(entity, permaEffects);
+        List<KeyValuePair<string, int>> tempEffects = entityStats.GetTempEffects(summonname);
+        entityStats.SetTempEffects(entity, tempEffects);
+
         loadMap.CreateHealthLabel(cellindex, health, entity.name);
 	}
 
@@ -87,6 +95,7 @@ public class Summon : MonoBehaviour {
         entityStats.SetArmorPiercing(entity, entityMemento.armorpiercing);
         entityStats.SetRangedArmorPiercing(entity, entityMemento.rangedarmorpiercing);
         entityStats.SetVision(entity, entityMemento.vision);
+        entityStats.SetSpecialActions(entity, entityMemento.specialActions);
         entityStats.SetPermaEffects(entity, entityMemento.permaEffects);
         entityStats.SetTempEffects(entity, entityMemento.tempEffects);
 

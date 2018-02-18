@@ -20,6 +20,7 @@ public class Entity : MonoBehaviour {
     public int armorpiercing;
     public int rangedarmorpiercing;
     public int vision;
+    public List<string> specialActions = new List<string>();
     public List<string> permaEffects = new List<string>();
     public List<KeyValuePair<string, int>> tempEffects = new List<KeyValuePair<string, int>>();
 

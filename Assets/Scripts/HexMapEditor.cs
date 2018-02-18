@@ -26,10 +26,12 @@ public class HexMapEditor : MonoBehaviour {
     public PlayerManager playerManager;
     public Vision vision;
 
-	public int currindex;
-
+	public int currIndex;
 	public int selIndex;
     public string selectedBuilding;
+
+    public List<string> avaliableActions = new List<string>();
+    public string chosenAction = string.Empty;
 
 	public bool lockbattle;
 	public bool editmode;
@@ -55,9 +57,14 @@ public class HexMapEditor : MonoBehaviour {
             loadMap.LoadHexTiles();
             loadMap.LoadTerrain();
             loadMap.LoadBuildings();
-            loadMap.LoadEntities();
+            //loadMap.LoadEntities();
             loadMap.LoadResources();
             loadMap.LoadCorpses();
+            summon.SummonEntity(14, EntityNames.Necromancer, 1);
+            summon.SummonEntity(12, EntityNames.Militia, 2);
+            summon.SummonEntity(15, EntityNames.Militia, 3);
+            summon.SummonEntity(3, EntityNames.Skeleton, 1);
+            summon.SummonEntity(18, EntityNames.Zombie, 1);
         }
         else //create new game when no game, set from player settings in menu
         {
@@ -84,39 +91,48 @@ public class HexMapEditor : MonoBehaviour {
 	}
 
 	void HandleInput () {
-		if (editmode == true) {
-			currindex = select.ChangeTerrain (colors, activeColor);
-		} else {
-			currindex = select.GetCurrIndex ();
-		}
+        if (editmode == true)
+        {
+            currIndex = select.ChangeTerrain(colors, activeColor);
+        }
+        else
+        {
+            currIndex = select.GetCurrIndex();
+        }
 
-        //TODO lock ability for user to save while attack in progress because battle object is not saved
+        if (currIndex == selIndex)
+        {
+            return;
+        }
 
 		//-----Selector--------------
-		Debug.Log(currindex);
-        GameObject currEntityObj = hexGrid.GetEntityObject(currindex);
-        GameObject currBuildingObj = hexGrid.GetBuildingObject(currindex);
+		Debug.Log(currIndex);
+        GameObject selEntityObj = hexGrid.GetEntityObject(selIndex);
+        GameObject currEntityObj = hexGrid.GetEntityObject(currIndex);
+        GameObject currBuildingObj = hexGrid.GetBuildingObject(currIndex);
+        avaliableActions = new List<string>();
 
         if (entityStorage.GetPlayerEntityList(playerManager.currPlayer).Contains (currEntityObj)) {
             movement.UnhighlightPossMovement(hexGrid.GetEntityObject(selIndex));
-            selIndex = currindex;
             //display all possible positions
-            movement.HighlightPossMovement(currEntityObj, selIndex);
+            movement.HighlightPossMovement(currEntityObj, currIndex);
             //TODO list info for curr entity, display it
+            avaliableActions = entityStats.GetCurrSpecialActions(currEntityObj);
             lockbattle = false;
 		}
         if (buildingStorage.GetPlayerBuildingList(playerManager.currPlayer).Contains(currBuildingObj)) {
-            buildingManager.DisplayBuilding(currindex);
+            buildingManager.DisplayBuilding(currIndex);
             //TODO GUI for buildings
         }
-        //ensures attacks only happen once per update 
-		if (lockbattle == false) {
-			bool checkAttHappen = battle.Attack (selIndex, currindex);
-			if (checkAttHappen == true) {
-				lockbattle = true;
-			}
+        //ensures attacks only happen once per update
+        //TODO add here: lock ability for user to save while attack in progress because battle object is not saved
+        if (lockbattle == false && selEntityObj != null) {
+			battle.PerformAction (selIndex, currIndex);
+			lockbattle = true;
 		}
-	}
+
+        selIndex = currIndex;
+    }
 
 	public void SelectColor (int index) {
 		activeColor = colors[index];
@@ -129,7 +145,7 @@ public class HexMapEditor : MonoBehaviour {
 		GUI.Box(new Rect(10,120,140,150), "Menu");
 
 		//drop down menu after summon for various entities, non-editor with validation for souls
-		GameObject currEntityObject = hexGrid.GetEntityObject(currindex);
+		GameObject currEntityObject = hexGrid.GetEntityObject(currIndex);
 		if (currEntityObject == null) {
 			if (GUI.Button (new Rect (20, 150, 120, 20), "Summon")) {
                 if (summonclicked == false) {
@@ -147,7 +163,7 @@ public class HexMapEditor : MonoBehaviour {
 				if (GUI.Button (new Rect (150, 150 + spacing, 120, 20), "Summon" + entity)) {
 					bool validsummon = summon.ValidSummon (entity);
 					if (validsummon) {
-                        summon.SummonEntity (currindex, entity, playerManager.currPlayer);
+                        summon.SummonEntity (currIndex, entity, playerManager.currPlayer);
 					}
 					summonclicked = false;
 				}
@@ -176,7 +192,7 @@ public class HexMapEditor : MonoBehaviour {
                 {
                     if (editmode == true)
                     {
-                        summon.SummonEntity(currindex, entity, playerManager.currPlayer);
+                        summon.SummonEntity(currIndex, entity, playerManager.currPlayer);
                         summonclickededitor = false;
                     }
                 }
@@ -185,7 +201,7 @@ public class HexMapEditor : MonoBehaviour {
         }
 
 		//drop down menu after summon for various buildings
-		GameObject currBuildingObject = hexGrid.GetBuildingObject(currindex);
+		GameObject currBuildingObject = hexGrid.GetBuildingObject(currIndex);
 		if (currBuildingObject == null) {
 			if (GUI.Button (new Rect (20, 210, 120, 20), "Building")) {
 				if (buildingclicked == false) {
@@ -201,9 +217,9 @@ public class HexMapEditor : MonoBehaviour {
             foreach (string building in buildingStorage.GetBuildingFactionLists(playerFaction)) {
 				int spacing = i * 20;
 				if (GUI.Button (new Rect (150, 150 + spacing, 120, 20), "Building " + building)) {
-					bool validbuilding = build.ValidBuilding (building, currindex);
+					bool validbuilding = build.ValidBuilding (building, currIndex);
 					if (validbuilding) {
-						build.BuildBuilding (currindex, building, playerManager.currPlayer);
+						build.BuildBuilding (currIndex, building, playerManager.currPlayer);
 					}
 					buildingclicked = false;
 				}
@@ -212,7 +228,7 @@ public class HexMapEditor : MonoBehaviour {
 		}
 
 		//toggles editor mode
-		if(GUI.Button(new Rect(20,240,120,20), "Toggle Map Edit")) {
+		if (GUI.Button(new Rect(20,240,120,20), "Toggle Map Edit")) {
 			if (editmode == false) {
 				editmode = true;
 			} else {
@@ -222,7 +238,7 @@ public class HexMapEditor : MonoBehaviour {
 
 		//determine if all troops moved and turn can end
 		string turnstring = turn.ToString ();
-		if(GUI.Button(new Rect(30,330,60,60), turnstring)) {
+		if (GUI.Button(new Rect(30,330,60,60), turnstring)) {
             bool checkall = locate.CheckAllPoints (playerManager.currPlayer);
 			if (checkall == true) {
 				turn++;
@@ -243,10 +259,32 @@ public class HexMapEditor : MonoBehaviour {
 		}
 
 		//sets remaining units idle
-		if(GUI.Button(new Rect(30,300,60,20), "Set All Idle")) {
+		if (GUI.Button(new Rect(30,300,60,20), "Set All Idle"))
+        {
             locate.SetAllIdleStatus(true, playerManager.currPlayer);
 		}
+
+        //choose different attacks
+        if (GUI.Button(new Rect(100, 300, 120, 20), "Attack"))
+        {
+            chosenAction = "Attack"; //TODO add this to const
+        }
+        if (avaliableActions.Count > 0)
+        {
+            int i = 0;
+            foreach (string action in avaliableActions)
+            {
+                int spacing = i * 20;
+                if (GUI.Button(new Rect(100, 320 + spacing, 120, 20), action))
+                {
+                    chosenAction = action;
+                }
+                i++;
+            }
+        }
+        else
+        {
+            chosenAction = string.Empty;
+        }
 	}
 }
-
-//TODO refactor lists of entities, battles, and load map

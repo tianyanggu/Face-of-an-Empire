@@ -21,6 +21,7 @@ public class EntityMemento {
     public int armorpiercing;
     public int rangedarmorpiercing;
     public int vision;
+    public List<string> specialActions;
     public List<string> permaEffects;
     public List<KeyValuePair<string, int>> tempEffects;
 
