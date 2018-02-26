@@ -100,7 +100,7 @@ public class HexMapEditor : MonoBehaviour {
             currIndex = select.GetCurrIndex();
         }
 
-        if (currIndex == selIndex)
+        if (currIndex == selIndex) //TODO return if hit UI object
         {
             return;
         }
@@ -114,8 +114,10 @@ public class HexMapEditor : MonoBehaviour {
 
         if (entityStorage.GetPlayerEntityList(playerManager.currPlayer).Contains (currEntityObj)) {
             movement.UnhighlightPossMovement(hexGrid.GetEntityObject(selIndex));
+            movement.UnhighlightPossAttack(hexGrid.GetEntityObject(selIndex));
             //display all possible positions
             movement.HighlightPossMovement(currEntityObj, currIndex);
+            movement.HighlightPossAttack(currEntityObj, currIndex);
             //TODO list info for curr entity, display it
             avaliableActions = entityStats.GetCurrSpecialActions(currEntityObj);
             lockbattle = false;
@@ -127,7 +129,7 @@ public class HexMapEditor : MonoBehaviour {
         //ensures attacks only happen once per update
         //TODO add here: lock ability for user to save while attack in progress because battle object is not saved
         if (lockbattle == false && selEntityObj != null) {
-			battle.PerformAction (selIndex, currIndex);
+			battle.PerformAction (selIndex, currIndex, chosenAction);
 			lockbattle = true;
 		}
 
@@ -263,6 +265,11 @@ public class HexMapEditor : MonoBehaviour {
         {
             locate.SetAllIdleStatus(true, playerManager.currPlayer);
 		}
+
+        if (hexGrid.GetEntityObject(selIndex) != null)
+        {
+            GUI.Box(new Rect(100, 280, 120, 20), entityStats.GetType(hexGrid.GetEntityObject(selIndex)));
+        } 
 
         //choose different attacks
         if (GUI.Button(new Rect(100, 300, 120, 20), "Attack"))

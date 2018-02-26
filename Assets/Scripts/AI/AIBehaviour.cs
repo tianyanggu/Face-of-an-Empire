@@ -13,7 +13,7 @@ public class AIBehaviour : MonoBehaviour {
 	public Battle battle;
     public EntityStats entityStats;
 
-	private List<int> aiMovementIndexes = new List<int> ();
+	private HashSet<int> aiMovementIndexes = new HashSet<int> ();
 
 	private List<string> nearbyPlayerEntities = new List<string> ();
 	private List<int> nearbyPlayerEntitiesIndex = new List<int> ();
@@ -51,7 +51,7 @@ public class AIBehaviour : MonoBehaviour {
 					attackPos.Add (attIndex);
 				}
 			}
-			battle.PerformAction (eindex, attackPos[0]);
+			battle.PerformAction (eindex, attackPos[0], "");
 			//battle.Attack (attackPos[0], decideAttEntity);
 		}
         //if cannot reach right away, move closest possible

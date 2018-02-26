@@ -8,8 +8,8 @@ public class Movement : MonoBehaviour {
 	public HexGrid hexGrid;
     public EntityStats entityStats;
 
-	public List<int> availablepositions;
-	public List<int> possminmovepoints;
+	public HashSet<int> availablepositions = new HashSet<int>();
+	public HashSet<int> possminmovepoints = new HashSet<int>();
 
     public void HighlightPossMovement(GameObject entity, int selIndex)
     {
@@ -17,22 +17,46 @@ public class Movement : MonoBehaviour {
         //note: don't instantiate new List<int> right away and set it as entity.GetComponent<Entity>().validMovementPositions
         //for some reason reference is not kept of the original list and thus is not set
         entity.GetComponent<Entity>().validMovementPositions = GetCellIndexesBlockers(selIndex, entityStats.GetCurrMovementPoint(entity));
-        List<int> positions = entity.GetComponent<Entity>().validMovementPositions;
-        for (int i = 0; i < positions.Count; i++)
+        HashSet<int> positions = entity.GetComponent<Entity>().validMovementPositions;
+        foreach (int position in positions)
         {
-            hexGrid.cells[positions[i]].EnableHighlight(Color.white);
+            hexGrid.cells[position].EnableHighlight(Color.white);
         }
     }
 
     public void UnhighlightPossMovement(GameObject entity)
     {
         if (entity == null) return;
-        List<int> validMovementPositions = entity.GetComponent<Entity>().validMovementPositions;
-        for (int i = 0; i < validMovementPositions.Count; i++)
+        HashSet<int> validMovementPositions = entity.GetComponent<Entity>().validMovementPositions;
+        foreach (int position in validMovementPositions)
         {
-            hexGrid.cells[validMovementPositions[i]].DisableHighlight();
+            hexGrid.cells[position].DisableHighlight();
         }
         validMovementPositions.Clear();
+    }
+
+    public void HighlightPossAttack(GameObject entity, int selIndex) //TODO make attack rings smaller
+    {
+        if (entity == null || entityStats.GetCurrAttackPoint(entity) <= 0) return;
+        //note: don't instantiate new List<int> right away and set it as entity.GetComponent<Entity>().validMovementPositions
+        //for some reason reference is not kept of the original list and thus is not set
+        entity.GetComponent<Entity>().validAttackPositions = GetCellIndexesRange(selIndex, entityStats.GetCurrRange(entity));
+        HashSet<int> positions = entity.GetComponent<Entity>().validAttackPositions;
+        foreach (int position in positions)
+        {
+            hexGrid.cells[position].EnableHighlight(Color.red);
+        }
+    }
+
+    public void UnhighlightPossAttack(GameObject entity)
+    {
+        if (entity == null) return;
+        HashSet<int> validAttackPositions = entity.GetComponent<Entity>().validAttackPositions;
+        foreach (int position in validAttackPositions)
+        {
+            hexGrid.cells[position].DisableHighlight();
+        }
+        validAttackPositions.Clear();
     }
 
     //get all cell indexes one hex away
@@ -56,51 +80,47 @@ public class Movement : MonoBehaviour {
 
 		return positions;
 	}
-	//get all cell indexes two hex away
-	public List<int> GetCellIndexesTwoHexAway (int index) {
-		List<int> positions = new List<int> ();
-		HexCoordinates coord = hexGrid.GetCellCoord (index);
-		int coordx = coord.X;
-		int coordz = coord.Z;
 
-		//left and right 
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx - 1, coordz));
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx + 1, coordz));
-		//far left and right 
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx - 2, coordz));
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx + 2, coordz));
+    //get cell indexes within that range
+    public HashSet<int> GetCellIndexesRange(int index, int range)
+    {
+        availablepositions.Clear();
 
-		//one level upper left and right
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx - 1, coordz + 1));
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx, coordz + 1));
-		//one level upper far left and right
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx - 2, coordz + 1));
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx + 1, coordz + 1));
+        GetCellIndexesRangeHelper(index, range);
 
-		//two level upper center
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx - 1, coordz + 2));
-		//two level upper left and right
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx - 2, coordz + 2));
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx, coordz + 2));
+        return availablepositions;
+    }
 
-		//one level lower left and right
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx, coordz - 1));
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx + 1, coordz - 1));
-		//one level lower far left and right
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx - 1, coordz - 1));
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx + 2, coordz - 1));
+    private void GetCellIndexesRangeHelper(int index, int range)
+    {
+        if (range > 0)
+        {
+            HexCoordinates coord = hexGrid.GetCellCoord(index);
+            int coordx = coord.X;
+            int coordz = coord.Z;
 
-		//two level lower center
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx + 1, coordz - 2));
-		//two level lower left and right
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx, coordz - 2));
-		positions.Add(hexGrid.GetCellIndexFromCoord (coordx + 2, coordz - 2));
+            int left = hexGrid.GetCellIndexFromCoord(coordx - 1, coordz);
+            int right = hexGrid.GetCellIndexFromCoord(coordx + 1, coordz);
+            int uleft = hexGrid.GetCellIndexFromCoord(coordx - 1, coordz + 1);
+            int uright = hexGrid.GetCellIndexFromCoord(coordx, coordz + 1);
+            int lleft = hexGrid.GetCellIndexFromCoord(coordx, coordz - 1);
+            int lright = hexGrid.GetCellIndexFromCoord(coordx + 1, coordz - 1);
+            int[] hexdirections = new int[] { left, right, uleft, uright, lleft, lright };
 
-		return positions;
-	}
+            foreach (int direction in hexdirections)
+            {
+                if (direction >= 0 && direction < hexGrid.size)
+                {
+                    int newmovementpoints = range - 1;
+                    availablepositions.Add(direction);
+                    GetCellIndexesRangeHelper(direction, newmovementpoints);
+                }
+            }
+        }
+    }
 
-	//get cell indexes that can be moved to from given movement points
-	public List<int> GetCellIndexesBlockers (int index, int movementpoints) {
+    //get cell indexes that can be moved to from given movement points
+    public HashSet<int> GetCellIndexesBlockers (int index, int movementpoints) {
 		availablepositions.Clear();
 
 		GetCellIndexesBlockersHelper (index, movementpoints);

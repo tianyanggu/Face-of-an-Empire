@@ -16,8 +16,8 @@ public class Battle : MonoBehaviour {
     public PlayerManager playerManager;
 
     //entity
-    GameObject selEntity { get; set; }
-    GameObject currEntity { get; set; }
+    GameObject attacker { get; set; }
+    GameObject defender { get; set; }
     Vector3 cellCoord { get; set; }
 
     //entity stats
@@ -37,38 +37,35 @@ public class Battle : MonoBehaviour {
 	private int attackerCurrMovepoint = 0;
     private int attackerCurrAttpoint = 0;
 
-	public void PerformAction (int selIndex, int currIndex) {
-        selEntity = hexGrid.GetEntityObject(selIndex);
-        currEntity = hexGrid.GetEntityObject(currIndex);
+	public void PerformAction (int selIndex, int currIndex, string chosenAction) {
+        attacker = hexGrid.GetEntityObject(selIndex);
+        defender = hexGrid.GetEntityObject(currIndex);
         cellCoord = hexGrid.GetCellPos(currIndex);
 
-        GetMovementInfo (selEntity);
+        GetMovementInfo (attacker);
 		//------Movement Empty Cell------
-		if (currEntity == null) {
+		if (defender == null && chosenAction == string.Empty) {
             MovementAction(selIndex, currIndex);
         }
         //------Encounter Entity------
         else
         {
-            AttackAction(selIndex, currIndex);
+            AttackAction(selIndex, currIndex, chosenAction);
         }
 	}
 
-    public void AttackAction(int selIndex, int currIndex)
+    public void AttackAction(int selIndex, int currIndex, string chosenAction)
     {
         //check if on same team
-        int selTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(selEntity)];
-        int currTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(currEntity)];
-        if (selTeam == currTeam)
+        int selTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(attacker)];
+        int currTeam = playerManager.activePlayersTeam[entityStats.GetPlayerID(defender)];
+        if (selTeam == currTeam || chosenAction == string.Empty)
         {
             return;
         }
 
-        if (selTeam != currTeam && currEntity != null)
+        if (selTeam != currTeam && defender != null)
         {
-            GameObject attacker = selEntity;
-            GameObject defender = currEntity;
-
             GetAttackerInfo(attacker);
             GetDefenderInfo(defender);
 
@@ -77,21 +74,9 @@ public class Battle : MonoBehaviour {
             {
                 return;
             }
-            List<int> possattacktiles = null;
-
-            //------Determine Attack Range------
-            //TODO attacker range 3+ tiles away
-            if (attackerRange == 1)
-            {
-                possattacktiles = movement.GetCellIndexesOneHexAway(selIndex);
-            }
-            else if (attackerRange >= 2)
-            {
-                possattacktiles = movement.GetCellIndexesTwoHexAway(selIndex);
-            }
 
             //------Calc Defender New Health-------
-            if (possattacktiles.Contains(currIndex))
+            if (attacker.GetComponent<Entity>().validAttackPositions.Contains(currIndex))
             {
                 //if melee attack 
                 if (attackerRange == 1)
@@ -145,7 +130,7 @@ public class Battle : MonoBehaviour {
                     {
                         attacker.transform.position = cellCoord;
                         hexGrid.SetEntityObject(currIndex, attacker);
-                        GameObject attackerHealthText = GameObject.Find("Health " + entityStats.GetUniqueID(selEntity).ToString());
+                        GameObject attackerHealthText = GameObject.Find("Health " + entityStats.GetUniqueID(this.attacker).ToString());
                         attackerHealthText.transform.position = new Vector3(cellCoord.x, cellCoord.y + 0.1f, cellCoord.z);
                         SetMovementPoints(attacker, minmove);
                     }
@@ -156,9 +141,14 @@ public class Battle : MonoBehaviour {
                     }
                 }
 
+                //TODO set movement points to zero unless has attacking and moving ability e.g. horse archers
+
                 //Set New Info
-                SetAttackerInfo(attacker, entityStats.GetUniqueID(selEntity).ToString());
-                SetDefenderInfo(defender, entityStats.GetUniqueID(currEntity).ToString());
+                SetAttackerInfo(attacker, entityStats.GetUniqueID(this.attacker).ToString());
+                SetDefenderInfo(defender, entityStats.GetUniqueID(this.defender).ToString());
+
+                movement.UnhighlightPossAttack(attacker);
+                movement.HighlightPossAttack(attacker, currIndex);
             }
         }
     }
@@ -172,28 +162,28 @@ public class Battle : MonoBehaviour {
         }
         //TODO movement for 1 tile position
 
-        if (selEntity.GetComponent<Entity>().validMovementPositions.Contains(currIndex))
+        if (attacker.GetComponent<Entity>().validMovementPositions.Contains(currIndex))
         {
             //get min movement points used
             if (attackerMovepoint == 1 && attackerCurrMovepoint == 1)
             {
-                SetMovementPoints(selEntity, 1);
+                SetMovementPoints(attacker, 1);
             }
             else if (attackerMovepoint != 1)
             {
                 int minmove = movement.GetMovementPointsUsed(selIndex, currIndex, attackerCurrMovepoint);
                 //set new movement points remaining
-                SetMovementPoints(selEntity, minmove);
+                SetMovementPoints(attacker, minmove);
             }
 
-            GameObject playerHealth = GameObject.Find("Health " + entityStats.GetUniqueID(selEntity).ToString());
-            selEntity.transform.position = cellCoord;
+            GameObject playerHealth = GameObject.Find("Health " + entityStats.GetUniqueID(attacker).ToString());
+            attacker.transform.position = cellCoord;
             playerHealth.transform.position = new Vector3(cellCoord.x, cellCoord.y + 0.1f, cellCoord.z);
             hexGrid.SetEntityObject(selIndex, null);
-            hexGrid.SetEntityObject(currIndex, selEntity);
+            hexGrid.SetEntityObject(currIndex, attacker);
 
-            movement.UnhighlightPossMovement(selEntity);
-            movement.HighlightPossMovement(selEntity, currIndex);
+            movement.UnhighlightPossMovement(attacker);
+            movement.HighlightPossMovement(attacker, currIndex);
         }
     }
 

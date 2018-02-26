@@ -32,5 +32,6 @@ public class Entity : MonoBehaviour {
     public bool idle;
 
     //Temp Info
-    public List<int> validMovementPositions = new List<int>();
+    public HashSet<int> validMovementPositions = new HashSet<int>();
+    public HashSet<int> validAttackPositions = new HashSet<int>();
 }
