@@ -334,7 +334,7 @@ public class EntityStats : MonoBehaviour {
             case EntityNames.Skeleton:
                 return new List<string>();
             case EntityNames.Necromancer:
-                return new List<string>() { "Strengthen Binding", "Agony" };
+                return new List<string>() { "Strengthen Binding", "Mass Agony" };
             case EntityNames.SkeletonArcher:
                 return new List<string>();
             case EntityNames.ArmoredSkeleton:

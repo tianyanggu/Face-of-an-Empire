@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
+using System;
 
 public class Battle : MonoBehaviour {
 
@@ -75,9 +76,14 @@ public class Battle : MonoBehaviour {
                 return;
             }
 
-            //------Calc Defender New Health-------
+            //if in range then attack happens
             if (attacker.GetComponent<Entity>().validAttackPositions.Contains(currIndex))
             {
+                //TODO show in yellow the area where it will be attacking
+                //determine damage inflicted and to which tiles
+                BattleObject battleObject = CalculateBattleObject(chosenAction);
+
+
                 //if melee attack 
                 if (attackerRange == 1)
                 {
@@ -151,6 +157,24 @@ public class Battle : MonoBehaviour {
                 movement.HighlightPossAttack(attacker, currIndex);
             }
         }
+    }
+
+    private BattleObject CalculateBattleObject(string chosenAction)
+    {
+        BattleObject battleObject = GetChosenActionStats(chosenAction);
+
+        return battleObject;
+    }
+
+    private BattleObject GetChosenActionStats(string chosenAction)
+    {
+        //TODO put this in some sort of stats script
+        BattleObject battleObject = new BattleObject();
+        if (chosenAction == "MassAgony")
+        {
+            //battleObject.
+        }
+        throw new NotImplementedException();
     }
 
     public void MovementAction(int selIndex, int currIndex)
