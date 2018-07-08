@@ -33,7 +33,7 @@ public class LoadMap : MonoBehaviour {
     }
 
     public void LoadResources () {
-		int souls = GameMemento.current.souls;
+		int souls = GameMemento.current.aether;
         currency.SetSouls (souls);
         //TODO currency for each player
         //int gold = GameMemento.current.gold;
@@ -141,7 +141,7 @@ public class LoadMap : MonoBehaviour {
         }
     }
 
-    public void LoadRandom (int seed) {
+    public void LoadRandomTerrain (int seed) {
         Random.InitState(seed);
 		for (int i = 0; i < hexGrid.size; i++) {
 			//terrain generated via seed

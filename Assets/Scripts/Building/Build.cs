@@ -102,7 +102,7 @@ public class Build : MonoBehaviour {
         switch (faction)
         {
             case FactionNames.Undead:
-                int souls = currency.souls;
+                int souls = currency.aether;
                 int cost = buildingStats.buildSoulCost(building);
 
                 List<string> corpses = hexGrid.GetCorpses(index);
@@ -113,13 +113,13 @@ public class Build : MonoBehaviour {
                 {
                     if (corpses.Contains(EntityNames.Militia))
                     {
-                        currency.ChangeSouls(-cost);
+                        currency.ChangeAether(-cost);
                         hexGrid.RemoveCorpse(index, EntityNames.Militia);
                         return true;
                     }
                     else if (entityStats.GetType(entity) == EntityNames.Skeleton || entityStats.GetType(entity) == EntityNames.Zombie || entityStats.GetType(entity) == EntityNames.SkeletonArcher)
                     {
-                        currency.ChangeSouls(-cost);
+                        currency.ChangeAether(-cost);
                         GameObject entityGameObj = hexGrid.GetEntityObject(index);
                         entityStorage.GetPlayerEntityList(entityStats.GetPlayerID(entity)).Remove(entityGameObj);
                         Destroy(entityGameObj);

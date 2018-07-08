@@ -4,23 +4,23 @@ using UnityEngine.UI;
 
 public class Currency : MonoBehaviour {
 
-	public GameObject soulsObject;
-    public int souls = 0;
+	public GameObject aetherObject;
+    public int aether = 0;
     public int gold = 0;
 
-    //change amount of souls
-    public void ChangeSouls(int change) {
-		souls += change;
+    //change amount of aether
+    public void ChangeAether(int change) {
+		aether += change;
 
 		//sets to new amount
-		Text soulsNum = soulsObject.GetComponent<Text> ();
-		soulsNum.text = "Souls:" + souls.ToString ();
+		Text aetherNum = aetherObject.GetComponent<Text> ();
+        aetherNum.text = "Aether:" + aether.ToString ();
 	}
 
     public void SetSouls(int amount)
     {
-        souls = amount;
-        Text soulsNum = soulsObject.GetComponent<Text>();
-        soulsNum.text = "Souls:" + amount.ToString();
+        aether = amount;
+        Text aetherNum = aetherObject.GetComponent<Text>();
+        aetherNum.text = "Aether:" + amount.ToString();
     }
 }

@@ -14,7 +14,7 @@ public class Game : MonoBehaviour {
     //Every Memento have to create new since current game is static
     public void SetMemento ()
     {
-        gameID = "ttt";
+        gameID = "ttt"; //TODO allow player to set gameID
         GameMemento.current = new GameMemento();
         GameMemento.current.gameID = gameID;
 
@@ -41,7 +41,7 @@ public class Game : MonoBehaviour {
         GameMemento.current.currPlayerOrder = playerManager.currPlayerOrder;
         GameMemento.current.currPlayer = playerManager.currPlayer;
 
-        GameMemento.current.souls = currency.souls;
+        GameMemento.current.aether = currency.aether;
         GameMemento.current.gold = currency.gold;
 
         for (int i = 0; i < hexGrid.cells.Length; i++)

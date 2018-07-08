@@ -48,11 +48,13 @@ public class HexMapEditor : MonoBehaviour {
 		lockbattle = false;
 		editmode = false;
         
-        SaveLoad.Load();
-        GameMemento.current = SaveLoad.savedGame;
-        if (GameMemento.current.hexGridMemento.size != 0) //load from most recent if player presses continue
+        bool loadNew = false; //GameMemento.current.hexGridMemento.size == 0 //load from most recent if player presses continue
+        if (!loadNew) 
         {
             Debug.Log("Loading");
+            SaveLoad.Load();
+            GameMemento.current = SaveLoad.savedGame;
+
             playerManager.SetActivePlayers();
             loadMap.LoadHexTiles();
             loadMap.LoadTerrain();
@@ -69,9 +71,9 @@ public class HexMapEditor : MonoBehaviour {
         else //create new game when no game, set from player settings in menu
         {
             Debug.Log("New");
-            playerManager.SetActivePlayers(); //TODO modify set active players to set new players when new game
+            playerManager.SetNewGamePlayers(); //TODO modify set active players to set new players when new game
             loadMap.LoadNewHexTiles(12, 12);
-            loadMap.LoadRandom(12); //sets the seed of the terrain spawn
+            loadMap.LoadRandomTerrain(12); //sets the seed of the terrain spawn
             //TODO set above random seed somewhere
             //TODOTEST remove test entities
             summon.SummonEntity(14, EntityNames.Necromancer, 1);

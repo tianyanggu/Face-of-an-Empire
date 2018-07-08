@@ -18,7 +18,7 @@ public class GameMemento {
     public int currPlayerOrder;
     public int currPlayer;
 
-    public int souls;
+    public int aether;
     public int gold;
 
     public List<string> hexGridTerrainList;

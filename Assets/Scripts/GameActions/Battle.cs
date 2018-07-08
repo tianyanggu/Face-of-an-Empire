@@ -83,7 +83,6 @@ public class Battle : MonoBehaviour {
                 //determine damage inflicted and to which tiles
                 BattleObject battleObject = CalculateBattleObject(chosenAction);
 
-
                 //if melee attack 
                 if (attackerRange == 1)
                 {
@@ -163,6 +162,11 @@ public class Battle : MonoBehaviour {
     {
         BattleObject battleObject = GetChosenActionStats(chosenAction);
 
+        if (battleObject.AoeType > 1)
+        {
+            //TODO battleObject.AffectedTiles = CalculateAffectedTiles();
+        }
+
         return battleObject;
     }
 
@@ -172,9 +176,11 @@ public class Battle : MonoBehaviour {
         BattleObject battleObject = new BattleObject();
         if (chosenAction == "MassAgony")
         {
-            //battleObject.
+            battleObject.MagicDmg = 30;
+            battleObject.AoeType = 2;
         }
-        throw new NotImplementedException();
+
+        return battleObject;
     }
 
     public void MovementAction(int selIndex, int currIndex)
@@ -259,25 +265,25 @@ public class Battle : MonoBehaviour {
             {
                 //HUMANS
                 case EntityNames.Militia:
-                    currency.ChangeSouls(100);
+                    currency.ChangeAether(100);
                     break;
                 case EntityNames.Archer:
-                    currency.ChangeSouls(150);
+                    currency.ChangeAether(150);
                     break;
                 case EntityNames.Longbowman:
-                    currency.ChangeSouls(200);
+                    currency.ChangeAether(200);
                     break;
                 case EntityNames.Crossbowman:
-                    currency.ChangeSouls(150);
+                    currency.ChangeAether(150);
                     break;
                 case EntityNames.Footman:
-                    currency.ChangeSouls(150);
+                    currency.ChangeAether(150);
                     break;
                 case EntityNames.MountedKnight:
-                    currency.ChangeSouls(200);
+                    currency.ChangeAether(200);
                     break;
                 case EntityNames.LightsChosen:
-                    currency.ChangeSouls(1000);
+                    currency.ChangeAether(1000);
                     break;
             }
 		}

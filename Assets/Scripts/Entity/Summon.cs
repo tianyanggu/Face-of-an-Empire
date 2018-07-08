@@ -108,11 +108,11 @@ public class Summon : MonoBehaviour {
         switch (faction)
         {
             case FactionNames.Undead:
-                int souls = currency.souls;
+                int souls = currency.aether;
                 int cost = entityStats.summonSoulCost(entity);
                 if (souls >= cost)
                 {
-                    currency.ChangeSouls(-cost);
+                    currency.ChangeAether(-cost);
                     return true;
                 }
                 return false;

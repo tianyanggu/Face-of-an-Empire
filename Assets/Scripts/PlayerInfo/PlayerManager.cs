@@ -28,6 +28,10 @@ public class PlayerManager : MonoBehaviour {
         currPlayer = GameMemento.current.currPlayer;
 
         //TODO throw exception and return players to start screen if activeplayers is empty
+    }
+
+    public void SetNewGamePlayers()
+    {
         //TEST CODE
         if (activePlayersName.Count == 0)
         {
