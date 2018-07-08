@@ -49,10 +49,6 @@ public class BuildingManager : MonoBehaviour {
 
     public void TickProduction()
     {
-        //if (!buildingStorage.activePlayerBuildings.Any())
-        //{
-        //    return;
-        //}
         foreach (GameObject currBuildings in buildingStorage.GetPlayerBuildingList(playerManager.currPlayer))
         {
             currBuildings.GetComponent<Building>().TickProductionTimer();
